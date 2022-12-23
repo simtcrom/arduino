@@ -24,6 +24,8 @@
 - After flashing the first program ([irmonitor.ino][df4]), in serial monotor sometimes, same remote keys produce random codes. I dont know the explanation for this.
 - In that case, unplug [VS1838B][df1] and power cycle arduino, most cases that resolve this issue.
 
+https://youtu.be/VfsWepVmjtk
+
 [df1]: <https://robu.in/product/ir-receiving-head-vs1838b-remote-control-receiver/>
 [df2]: <https://robu.in/product/black-ir-remote-control-without-battery/>
 [df3]: <https://robu.in/product/pro-micro-5v-16m-mini-leonardo-micro-controller-development-board-for-arduino/>
