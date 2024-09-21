@@ -9,5 +9,6 @@
 
 ![wiring](connection.jpg)
 
+## Working
 
-(IMG_4276.jpg)
+![working](IMG_4276.jpg)
