@@ -1,0 +1,4 @@
+
+## Wiring
+
+![wiring](connection.jpg)
