@@ -3,7 +3,7 @@
 ![wiring](diagram.jpg)
 
 ## Web Console
-http://<ipaddress>
+http://IPADDRESS
 
 ## OTA Update
-http://<ipaddress>/update
+http://IPADDRESS/update
