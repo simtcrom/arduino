@@ -7,7 +7,7 @@
 #include <time.h>
 
 // ===== WiFi credentials =====
-const char* ssid = "OpenWrtAP";
+const char* ssid = "xxx";
 const char* password = "xxxx";  // <-- your password
 
 // ===== NTP server =====
