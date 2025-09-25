@@ -2,10 +2,10 @@
 #include <Arduino_ConnectionHandler.h>
 
 // ====== Arduino IoT Cloud Credentials ======
-const char DEVICE_LOGIN_NAME[]  = "xxxx";   // Enter device ID
+const char DEVICE_LOGIN_NAME[]  = "xxx";   // Enter device ID
 const char SSID[]               = "xxx";    // Enter WiFi SSID (name)
 const char PASS[]               = "xxx";    // Enter WiFi password
-const char DEVICE_KEY[]         = "xxx";    // Enter Secret device password (Secret Key)
+const char DEVICE_KEY[]         = "xxxx";    // Enter Secret device password (Secret Key)
 
 // ====== Relay Pin Assignments ======
 #define RelayPin1 23  // Relay for Sia Room Light
@@ -24,8 +24,8 @@ void onSiaroomlightChange();
 void onSiaroomfanChange();
 
 // ====== Cloud Variables ======
-CloudSwitch siaroomlight;
-CloudSwitch siaroomfan;
+CloudSwitch bedroomlight;
+CloudSwitch bedroomfan;
 
 // ====== WiFi Connection ======
 WiFiConnectionHandler ArduinoIoTPreferredConnection(SSID, PASS);
@@ -60,7 +60,7 @@ void loop() {
 
 // ====== Light Control ======
 void onSiaroomlightChange() {
-  if (siaroomlight == 1) {
+  if (bedroomlight == 1) {
     digitalWrite(RelayPin1, RELAY_ON);
     Serial.println("Sia Room Light ON");
     toggleState_1 = 1;
@@ -73,7 +73,7 @@ void onSiaroomlightChange() {
 
 // ====== Fan Control ======
 void onSiaroomfanChange() {
-  if (siaroomfan == 1) {
+  if (bedroomfan == 1) {
     digitalWrite(RelayPin2, RELAY_ON);
     Serial.println("Sia Room Fan ON");
     toggleState_2 = 1;
@@ -88,8 +88,8 @@ void onSiaroomfanChange() {
 void initProperties() {
   ArduinoCloud.setBoardId(DEVICE_LOGIN_NAME);
   ArduinoCloud.setSecretDeviceKey(DEVICE_KEY);
-  ArduinoCloud.addProperty(siaroomlight, READWRITE, ON_CHANGE, onSiaroomlightChange);
-  ArduinoCloud.addProperty(siaroomfan, READWRITE, ON_CHANGE, onSiaroomfanChange);
+  ArduinoCloud.addProperty(bedroomlight, READWRITE, ON_CHANGE, onSiaroomlightChange);
+  ArduinoCloud.addProperty(bedroomfan, READWRITE, ON_CHANGE, onSiaroomfanChange);
 }
 
 // ====== Connection Callbacks ======
