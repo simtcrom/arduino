@@ -6,8 +6,8 @@
 
 #define RELAY_PIN D2
 
-const char* ssid = "OpenWrtAP";
-const char* password = "1988198820";
+const char* ssid = "xxxxx";
+const char* password = "xxxxx";
 
 ESP8266WebServer server(80);
 WiFiUDP ntpUDP;
