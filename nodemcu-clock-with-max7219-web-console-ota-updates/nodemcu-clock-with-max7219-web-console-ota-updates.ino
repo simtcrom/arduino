@@ -299,6 +299,7 @@ void setup() {
   lc.clearDisplay(0);
 
   WiFi.mode(WIFI_STA);
+  WiFi.hostname("node-hall-clock");
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi");
 
