@@ -6,8 +6,8 @@
 
 #define RELAY_PIN D2
 
-const char* ssid = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid = "xx";
+const char* password = "xx";
 
 ESP8266WebServer server(80);
 WiFiUDP ntpUDP;
@@ -17,6 +17,7 @@ bool relayState = true;
 int onHour = -1, onMinute = -1;
 int offHour = -1, offMinute = -1;
 
+// -------------------- HTML --------------------
 void handleRoot() {
   String html = R"rawliteral(
     <!DOCTYPE html>
@@ -26,7 +27,7 @@ void handleRoot() {
       <style>
         body { font-family: Arial; text-align: center; margin-top: 40px; }
         input, button { font-size: 18px; margin: 5px; padding: 5px; }
-        #status, #time, #schedule { font-size: 20px; margin-top: 15px; }
+        #status, #time, #schedule, #uptime { font-size: 20px; margin-top: 15px; }
       </style>
       <script>
         function updateStatus() {
@@ -40,6 +41,9 @@ void handleRoot() {
           fetch('/schedule').then(r => r.text()).then(t => {
             document.getElementById('schedule').innerText = "Scheduled ON/OFF: " + t;
           });
+          fetch('/uptime').then(r => r.text()).then(t => {
+            document.getElementById('uptime').innerText = "Uptime: " + t;
+          });
         }
         setInterval(updateStatus, 1000);
         window.onload = updateStatus;
@@ -49,7 +53,9 @@ void handleRoot() {
       <h2>Refrigerator Control</h2>
       <div id="status">Relay Status: Loading...</div>
       <div id="time">Current Time: Loading...</div>
+      <div id="uptime">Uptime: Loading...</div>
       <div id="schedule">Scheduled ON/OFF: Loading...</div>
+
       <form action='/setSchedule' method='GET'>
         ON Time: <input type='time' name='on'>
         <button type='button' onclick="location.href='/disableOnSchedule'">Disable ON Time</button><br>
@@ -57,15 +63,18 @@ void handleRoot() {
         <button type='button' onclick="location.href='/disableOffSchedule'">Disable OFF Time</button><br>
         <button type='submit'>Set Schedule</button>
       </form>
+
       <br>
       <button onclick="location.href='/on'">Turn ON</button>
       <button onclick="location.href='/off'">Turn OFF</button>
     </body>
     </html>
   )rawliteral";
+
   server.send(200, "text/html", html);
 }
 
+// -------------------- Relay Control --------------------
 void handleOn() {
   digitalWrite(RELAY_PIN, HIGH);
   relayState = true;
@@ -84,6 +93,7 @@ void handleOff() {
   server.send(303);
 }
 
+// -------------------- Schedule --------------------
 void handleSetSchedule() {
   if (server.hasArg("on")) {
     sscanf(server.arg("on").c_str(), "%d:%d", &onHour, &onMinute);
@@ -120,6 +130,7 @@ void handleDisableOffSchedule() {
   server.send(303);
 }
 
+// -------------------- Status APIs --------------------
 void handleStatus() {
   server.send(200, "text/plain", relayState ? "ON" : "OFF");
 }
@@ -127,12 +138,16 @@ void handleStatus() {
 void handleTime() {
   timeClient.update();
   char buf[16];
-  sprintf(buf, "%02d:%02d:%02d", timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds());
+  sprintf(buf, "%02d:%02d:%02d",
+          timeClient.getHours(),
+          timeClient.getMinutes(),
+          timeClient.getSeconds());
   server.send(200, "text/plain", buf);
 }
 
 void handleSchedule() {
   String schedule = "";
+
   if (onHour >= 0)
     schedule += String(onHour) + ":" + (onMinute < 10 ? "0" : "") + String(onMinute);
   else
@@ -148,6 +163,24 @@ void handleSchedule() {
   server.send(200, "text/plain", schedule);
 }
 
+// -------------------- Uptime --------------------
+void handleUptime() {
+  unsigned long seconds = millis() / 1000;
+
+  unsigned int days = seconds / 86400;
+  seconds %= 86400;
+  unsigned int hours = seconds / 3600;
+  seconds %= 3600;
+  unsigned int minutes = seconds / 60;
+  seconds %= 60;
+
+  char buf[32];
+  sprintf(buf, "%ud %02uh %02um %02us", days, hours, minutes, seconds);
+
+  server.send(200, "text/plain", buf);
+}
+
+// -------------------- Setup --------------------
 void setup() {
   pinMode(RELAY_PIN, OUTPUT);
 
@@ -157,6 +190,7 @@ void setup() {
   offHour = EEPROM.read(2);
   offMinute = EEPROM.read(3);
   int savedState = EEPROM.read(4);
+
   relayState = (savedState == 1);
   digitalWrite(RELAY_PIN, relayState ? HIGH : LOW);
 
@@ -177,9 +211,12 @@ void setup() {
   server.on("/status", handleStatus);
   server.on("/time", handleTime);
   server.on("/schedule", handleSchedule);
+  server.on("/uptime", handleUptime);
+
   server.begin();
 }
 
+// -------------------- Loop --------------------
 void loop() {
   server.handleClient();
   timeClient.update();
