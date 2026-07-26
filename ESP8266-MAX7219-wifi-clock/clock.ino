@@ -13,7 +13,7 @@ String date;
 #define ROTATE  90
 
 // for NodeMCU 1.0
-#define DIN_PIN 14  // D5
+#define DIN_PIN 14  // D8
 #define CS_PIN  13  // D7
 #define CLK_PIN 12  // D6
 
